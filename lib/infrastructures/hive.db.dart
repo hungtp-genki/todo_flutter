@@ -1,32 +1,33 @@
 import 'package:hive/hive.dart';
+import 'package:todo_flutter_demo/constants.dart';
 import 'package:todo_flutter_demo/entities/todo.entity.dart';
 import 'package:todo_flutter_demo/errors_expections.dart';
 
 class HiveInfra {
-  static const boxName = "todo-box";
-  late Box<TodoEntity> todoBox;
+  static const boxName = todoBoxName;
+  static late Box<TodoEntity> _todoBox;
 
-  HiveInfra() {
-    todoBox = Hive.box<TodoEntity>(HiveInfra.boxName);
+  static openBox() async {
+    _todoBox = await Hive.openBox<TodoEntity>(HiveInfra.boxName);
   }
 
   Future<List<TodoEntity>> getAllTodos() async {
     List<TodoEntity> allTodos =
-        todoBox.keys.map<TodoEntity>((key) => todoBox.get(key)!).toList();
+        _todoBox.keys.map<TodoEntity>((key) => _todoBox.get(key)!).toList();
     return allTodos;
   }
 
   Future<void> updateTodo(TodoEntity todo) async {
     try {
-      todoBox.put(todo.id, todo);
+      _todoBox.put(todo.id, todo);
     } catch (err) {
       throw UpdateTodoError().withDetail(err.toString());
     }
   }
 
-  Future<void> removeTodo(TodoEntity todo) async {
+  Future<void> removeTodo(String todoId) async {
     try {
-      todoBox.delete(todo.id);
+      _todoBox.delete(todoId);
     } catch (err) {
       throw RemoveTodoError().withDetail(err.toString());
     }
@@ -34,7 +35,7 @@ class HiveInfra {
 
   Future<TodoEntity?> getTodo(String id) async {
     try {
-      final todo = todoBox.get(id);
+      final todo = _todoBox.get(id);
       return todo;
     } catch (err) {
       throw GetTodoError().withDetail(err.toString());
@@ -43,7 +44,7 @@ class HiveInfra {
 
   Future<void> addTodo(TodoEntity todo) async {
     try {
-      return todoBox.put(todo.id, todo);
+      return _todoBox.put(todo.id, todo);
     } catch (err) {
       throw AddTodoError().withDetail(err.toString());
     }
@@ -51,7 +52,7 @@ class HiveInfra {
 
   Future<int> clearAllTodos() async {
     try {
-      return todoBox.clear();
+      return _todoBox.clear();
     } catch (err) {
       throw ClearAllTodoError().withDetail(err.toString());
     }

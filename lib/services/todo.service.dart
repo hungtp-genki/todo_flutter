@@ -7,6 +7,7 @@ class TodoService {
   late HiveInfra _hiveInfra;
   late TodoFactory _todoFactory;
   List<TodoEntity> _todos = [];
+
   TodoService() {
     _hiveInfra = HiveInfra();
     _todoFactory = TodoFactory();
@@ -56,10 +57,10 @@ class TodoService {
     }
   }
 
-  Future<List<TodoEntity>> removeTodo(TodoEntity todo) async {
+  Future<List<TodoEntity>> removeTodo(String todoId) async {
     try {
-      await _hiveInfra.removeTodo(todo);
-      _todos = _todos.where((t) => t.id != todo.id).toList();
+      await _hiveInfra.removeTodo(todoId);
+      _todos = _todos.where((t) => t.id != todoId).toList();
       return _todos;
     } catch (err) {
       rethrow;

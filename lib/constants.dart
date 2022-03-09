@@ -1,0 +1,1 @@
+const todoBoxName = "todo-box";
